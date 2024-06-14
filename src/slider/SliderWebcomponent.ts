@@ -59,7 +59,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             width: 100%; 
             height: 5px; 
             background: none; 
-            top: -7px; 
+            top: -8px; 
             pointer-events: none; 
             cursor: pointer; 
             -webkit-appearance: none; 
