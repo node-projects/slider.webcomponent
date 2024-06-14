@@ -1,6 +1,5 @@
 <html>
     <head>
-        <script src="../node_modules/construct-style-sheets-polyfill/dist/adoptedStyleSheets.js"></script>
         <script type="esms-options">
             {
             "shimMode": true
@@ -13,23 +12,14 @@
                     "@node-projects/base-custom-webcomponent": "./node_modules/@node-projects/base-custom-webcomponent/"
                 }
             };
-            importShim.addImportMap(importMap);
+            importShim.addImportMap(importMap); 
 
             importShim('../dist/index.js');
         </script>
     </head>
     <body>
-        <node-projects-tab style="position: absolute; width: 300px; height: 300px;">
-            <div header="Tab 1" style="background: red; display: none; height: 100%;" >Tab Content of Tab 1</div>
-            <div header="Tab 2" style="background: green; display: none; height: 100%;">Tab Content of Tab 2</div>
-            <div header="Tab 1" style="background: red; display: none; height: 100%;" >Tab Content of Tab 1</div>
-            <div header="Tab 2" style="background: green; display: none; height: 100%;">Tab Content of Tab 2</div>
-            <div header="Tab 1" style="background: red; display: none; height: 100%;" >Tab Content of Tab 1</div>
-            <div header="Tab 2" style="background: green; display: none; height: 100%;">Tab Content of Tab 2</div>
-            <div header="Tab 1" style="background: red; display: none; height: 100%;" >Tab Content of Tab 1</div>
-            <div header="Tab 2" style="background: green; display: none; height: 100%;">Tab Content of Tab 2</div>
-            <div header="Tab 1" style="background: red; display: none; height: 100%;" >Tab Content of Tab 1</div>
-            <div header="Tab 2" style="background: green; display: none; height: 100%;">Tab Content of Tab 2</div>
-        </node-projects-tab>
+        <node-projects-slider style="position: absolute; width: 500px; height: 300px;">
+
+        </node-projects-slider>
     </body>
 </html>

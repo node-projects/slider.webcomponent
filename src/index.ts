@@ -1,1 +1,1 @@
-export * from './tab/TabWebcomponent.js'
+export * from './slider/SliderWebcomponent.js'

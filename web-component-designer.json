@@ -5,7 +5,7 @@
                 "./dist/designer/ElementInteractionService.js"
             ],
             "containerService": [
-                "./dist/designer/TabPlacementService.js"
+                "./dist/designer/SliderPlacementService.js"
             ],
             "attachedPropertyService": [
                 "./dist/designer/AttachedPropertiesService.js"
