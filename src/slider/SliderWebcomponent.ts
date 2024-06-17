@@ -117,6 +117,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     private _max: number = 0;
     private _inputValues: HTMLInputElement[];
     private _rangeInputvalues: HTMLInputElement[];
+    private _ready: Boolean = false;
 
     public get min() {
         return this._min;
@@ -133,14 +134,16 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-        if (name == "min"){
-            this._min = Number(newValue);
-            this._minChanged();
+        if (this._ready) {
+            if (name == "min"){
+                this._min = Number(newValue);
+                this._minChanged();
+            }
+            if (name === "max"){
+                this._max = Number(newValue);
+                this._maxChanged();
+            } 
         }
-        if (name === "max"){
-            this._max = Number(newValue);
-            this._maxChanged();
-        } 
     }
 
     constructor() {
@@ -149,8 +152,8 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     }
 
     connectedCallback() {
-        this._inputValues = [];
-        this._rangeInputvalues = [];
+        this._inputValues = Array.from(this._getDomElements(".inputs-wrapper input"));
+        this._rangeInputvalues = Array.from(this._getDomElements(".range-input input"));
     }
 
     disconnectedCallback() {}
@@ -198,6 +201,8 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
                 }
             });
         }
+
+        this._ready = true;
     }
 
     private _handleInputChange(e: Event) {
