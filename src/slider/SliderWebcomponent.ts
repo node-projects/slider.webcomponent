@@ -89,38 +89,42 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
         <!-- Slider -->
         <div class="range-input">
-            <input type="range" class="min-range" min="0" max="10000" value="2500" step="1">
-            <input type="range" class="max-range" min="0" max="10000" value="7500" step="1">
+            <input type="range" class="min-range" step="1">
+            <input type="range" class="max-range" step="1">
         </div>
 
         <div class="inputs-wrapper">
-        <div class="input-field">
-            <input type="number" class="min-input" value="2500">
+            <div class="input-field">
+                <input type="number" class="min-input">
+            </div>
+            <div class="input-field">
+                <input type="number" class="max-input">
+            </div>
         </div>
-        <div class="input-field">
-            <input type="number" class="max-input" value="7500">
-        </div>
-    </div>
 
     `;
 
     public static readonly is = 'node-projects-slider';
 
     public static properties = {
+        valueMin: Number,
+        valueMax: Number,
         min: Number,
         max: Number
     }
 
-    static observedAttributes = ['value-min', 'value-max'];
+    static observedAttributes = ['value-min', 'value-max', 'min', 'max'];
 
-    private _ValueMin: number = 0;
+    private _valueMin: number = 0;
     private _valueMax: number = 0;
-    private _inputValues: HTMLInputElement[];
-    private _rangeInputvalues: HTMLInputElement[];
+    private _min: number = 0;
+    private _max: number = 0;
+    private _inputs: HTMLInputElement[];
+    private _rangeInputs: HTMLInputElement[];
     private _ready: Boolean = false;
 
     public get valueMin() {
-        return this._ValueMin;
+        return this._valueMin;
     }
     public set valueMin(value) {
         this.setAttribute('value-min', value.toString());
@@ -133,17 +137,39 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         this.setAttribute('value-max', value.toString());
     }
 
+    public get min() {
+        return this._min;
+    }
+    public set min(value) {
+        this.setAttribute('min', value.toString());
+    }
+
+    public get max() {
+        return this._max;
+    }
+    public set max(value) {
+        this.setAttribute('max', value.toString());
+    }
+
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-        if (this._ready) {
+        //if (this._ready) {
             if (name == "value-min"){
-                this._ValueMin = Number(newValue);
+                this._valueMin = Number(newValue);
                 this._valueMinChanged();
             }
             if (name === "value-max"){
                 this._valueMax = Number(newValue);
                 this._valueMaxChanged();
             } 
-        }
+            if (name == "min"){
+                this._min = Number(newValue);
+                this._minChanged();
+            }
+            if (name === "max"){
+                this._max = Number(newValue);
+                this._maxChanged();
+            } 
+        //}
     }
 
     constructor() {
@@ -152,8 +178,8 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     }
 
     connectedCallback() {
-        this._inputValues = Array.from(this._getDomElements(".inputs-wrapper input"));
-        this._rangeInputvalues = Array.from(this._getDomElements(".range-input input"));
+        this._inputs = Array.from(this._getDomElements(".inputs-wrapper input"));
+        this._rangeInputs = Array.from(this._getDomElements(".range-input input"));
     }
 
     disconnectedCallback() {}
@@ -165,9 +191,9 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
         let valuesGap = 500;
 
-        for (let i = 0; i < this._inputValues.length; i++) {
-            this._inputValues[i].addEventListener("blur", this._handleInputChange.bind(this));
-            this._inputValues[i].addEventListener("keydown", (e) => {
+        for (let i = 0; i < this._inputs.length; i++) {
+            this._inputs[i].addEventListener("blur", this._handleInputChange.bind(this));
+            this._inputs[i].addEventListener("keydown", (e) => {
                 if (e.key === "Enter") {
                     this._handleInputChange(e);
                 }
@@ -175,10 +201,10 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         }
 
         // Add event listeners to range input elements 
-        for (let i = 0; i < this._rangeInputvalues.length; i++) {
-            this._rangeInputvalues[i].addEventListener("input", e => {
-                let minVal = parseInt(this._rangeInputvalues[0].value);
-                let maxVal = parseInt(this._rangeInputvalues[1].value);
+        for (let i = 0; i < this._rangeInputs.length; i++) {
+            this._rangeInputs[i].addEventListener("input", e => {
+                let minVal = parseInt(this._rangeInputs[0].value);
+                let maxVal = parseInt(this._rangeInputs[1].value);
 
                 let diff = maxVal - minVal;
 
@@ -187,62 +213,81 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
                     // Check if the input is the min range input 
                     if ((e.target as HTMLInputElement).className === "min-range") {
-                        this._rangeInputvalues[0].value = (maxVal - valuesGap).toString();
+                        this._rangeInputs[0].value = (maxVal - valuesGap).toString();
                     } else {
-                        this._rangeInputvalues[1].value = (minVal + valuesGap).toString();
+                        this._rangeInputs[1].value = (minVal + valuesGap).toString();
                     }
                 } else {
 
                     // Update input values and range progress 
-                    this._inputValues[0].value = minVal.toString();
-                    this._inputValues[1].value = maxVal.toString();
-                    rangevalue.style.left = `${(minVal / parseInt(this._rangeInputvalues[0].max)) * 100}%`;
-                    rangevalue.style.right = `${100 - (maxVal / parseInt(this._rangeInputvalues[1].max)) * 100}%`;
+                    this._inputs[0].value = minVal.toString();
+                    this._inputs[1].value = maxVal.toString();
+                    rangevalue.style.left = `${(minVal / parseInt(this._rangeInputs[0].max)) * 100}%`;
+                    rangevalue.style.right = `${100 - (maxVal / parseInt(this._rangeInputs[1].max)) * 100}%`;
                 }
             });
         }
 
         this._ready = true;
+
+        this._updateInputValues();
+        this._updateRangeInputsMinMax();
+        this._updateSliderPosition(this.valueMin, parseInt(this._rangeInputs[0].max), true);
+        this._updateSliderPosition(this.valueMax, parseInt(this._rangeInputs[1].max), false);
+    }
+
+    private _updateInputValues() {
+        this._inputs[0].value = this._valueMin.toString();
+        this._inputs[1].value = this._valueMax.toString();
+    }
+
+    private _updateRangeInputsMinMax() {
+        this._rangeInputs.forEach(rangeInput => {
+            rangeInput.min = this._min.toString();
+            rangeInput.max = this._max.toString();
+        });
+        this._rangeInputs[0].value = this.valueMin.toString();
+        this._rangeInputs[1].value = this.valueMax.toString();
     }
 
     private _handleInputChange(e: Event) {
-        const inputIndex = this._inputValues.indexOf(e.target as HTMLInputElement);
+        const inputIndex = this._inputs.indexOf(e.target as HTMLInputElement);
         if (inputIndex === -1) return;
 
-        let minp = parseInt(this._inputValues[0].value);
-        let maxp = parseInt(this._inputValues[1].value);
+        let minp = parseInt(this._inputs[0].value);
+        let maxp = parseInt(this._inputs[1].value);
         let diff = maxp - minp;
 
-        if (minp < 0) {
-            alert("Minimum value cannot be less than 0");
-            this._inputValues[0].value = '0';
+        if (minp < this._min) {
+            alert(`{Minimum value cannot be less than $this.min.toString()}`);
+            this._inputs[0].value = this._min.toString();
             minp = 0;
         }
 
-        if (maxp > 10000) {
-            alert("Maximum value cannot be greater than 10000");
-            this._inputValues[1].value = '10000';
-            maxp = 10000;
+        if (maxp > this._max) {
+            alert(`{Maximum value cannot be greater than $this.max.toString()}`);
+            this._inputs[1].value = this._max.toString();
+            maxp = this._max;
         }
 
         if (minp > maxp - diff) {
-            this._inputValues[0].value = (maxp - diff).toString();
+            this._inputs[0].value = (maxp - diff).toString();
             minp = maxp - diff;
 
-            if (minp < 0) {
-                this._inputValues[0].value = '0';
-                minp = 0;
+            if (minp < this._min) {
+                this._inputs[0].value = this._min.toString();
+                minp = this._min;
             }
         }
 
-        if (diff >= 500 && maxp <= parseInt(this._rangeInputvalues[1].max)) {
+        if (diff >= 500 && maxp <= parseInt(this._rangeInputs[1].max)) {
             if (inputIndex === 0) {
-                this._rangeInputvalues[0].value = minp.toString();
-                let value1 = parseInt(this._rangeInputvalues[0].max);
+                this._rangeInputs[0].value = minp.toString();
+                let value1 = parseInt(this._rangeInputs[0].max);
                 this._updateSliderPosition(minp, value1, true);
             } else {
-                this._rangeInputvalues[1].value = maxp.toString();
-                let value2 = parseInt(this._rangeInputvalues[1].max);
+                this._rangeInputs[1].value = maxp.toString();
+                let value2 = parseInt(this._rangeInputs[1].max);
                 this._updateSliderPosition(maxp, value2, false);
             }
         }
@@ -258,13 +303,25 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     }
 
     private _valueMinChanged() {
-        this._inputValues[0].value = this._ValueMin.toString();
-        this._inputValues[0].dispatchEvent(new Event('blur', { bubbles: true }));
+        if (!this._ready) return;
+        this._inputs[0].value = this._valueMin.toString();
+        this._inputs[0].dispatchEvent(new Event('blur', { bubbles: true }));
     }
 
     private _valueMaxChanged() {
-        this._inputValues[1].value = this._valueMax.toString();
-        this._inputValues[1].dispatchEvent(new Event('blur', { bubbles: true }));
+        if (!this._ready) return;
+        this._inputs[1].value = this._valueMax.toString();
+        this._inputs[1].dispatchEvent(new Event('blur', { bubbles: true }));
+    }
+
+    private _minChanged() {
+        if (!this._ready) return;
+        this._updateRangeInputsMinMax();
+    }
+
+    private _maxChanged() {
+        if (!this._ready) return;
+        this._updateRangeInputsMinMax();
     }
 }
 
