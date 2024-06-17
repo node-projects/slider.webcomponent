@@ -111,37 +111,37 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         max: Number
     }
 
-    static observedAttributes = ['min', 'max'];
+    static observedAttributes = ['value-min', 'value-max'];
 
-    private _min: number = 0;
-    private _max: number = 0;
+    private _ValueMin: number = 0;
+    private _valueMax: number = 0;
     private _inputValues: HTMLInputElement[];
     private _rangeInputvalues: HTMLInputElement[];
     private _ready: Boolean = false;
 
-    public get min() {
-        return this._min;
+    public get valueMin() {
+        return this._ValueMin;
     }
-    public set min(value) {
-        this.setAttribute('min', value.toString());
+    public set valueMin(value) {
+        this.setAttribute('value-min', value.toString());
     }
 
-    public get max() {
-        return this._max;
+    public get valueMax() {
+        return this._valueMax;
     }
-    public set max(value) {
-        this.setAttribute('max', value.toString());
+    public set valueMax(value) {
+        this.setAttribute('value-max', value.toString());
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
         if (this._ready) {
-            if (name == "min"){
-                this._min = Number(newValue);
-                this._minChanged();
+            if (name == "value-min"){
+                this._ValueMin = Number(newValue);
+                this._valueMinChanged();
             }
-            if (name === "max"){
-                this._max = Number(newValue);
-                this._maxChanged();
+            if (name === "value-max"){
+                this._valueMax = Number(newValue);
+                this._valueMaxChanged();
             } 
         }
     }
@@ -257,13 +257,13 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         }
     }
 
-    private _minChanged() {
-        this._inputValues[0].value = this._min.toString();
+    private _valueMinChanged() {
+        this._inputValues[0].value = this._ValueMin.toString();
         this._inputValues[0].dispatchEvent(new Event('blur', { bubbles: true }));
     }
 
-    private _maxChanged() {
-        this._inputValues[1].value = this._max.toString();
+    private _valueMaxChanged() {
+        this._inputValues[1].value = this._valueMax.toString();
         this._inputValues[1].dispatchEvent(new Event('blur', { bubbles: true }));
     }
 }
