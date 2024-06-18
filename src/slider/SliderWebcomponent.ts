@@ -152,7 +152,6 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-        //if (this._ready) {
             if (name == "value-min"){
                 this._valueMin = Number(newValue);
                 this._valueMinChanged();
@@ -169,7 +168,6 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
                 this._max = Number(newValue);
                 this._maxChanged();
             } 
-        //}
     }
 
     constructor() {

@@ -20,14 +20,21 @@
                         },
                         {
                             "kind": "field",
-                            "name": "value",
+                            "name": "max",
                             "type":  {
                                 "text": "number"
                             }
                         },
                         {
                             "kind": "field",
-                            "name": "max",
+                            "name": "value-min",
+                            "type":  {
+                                "text": "number"
+                            }
+                        },
+                        {
+                            "kind": "field",
+                            "name": "value-max",
                             "type":  {
                                 "text": "number"
                             }
@@ -39,32 +46,43 @@
                             "fieldName": "min"
                         },
                         {
-                            "name": "value",
-                            "fieldName": "value"
-                        },
-                        {
                             "name": "max",
                             "fieldName": "max"
+                        },
+                        {
+                            "name": "value-min",
+                            "fieldName": "value-min"
+                        },
+                        {
+                            "name": "value-max",
+                            "fieldName": "value-max"
                         }
                     ],
                     "events": [
                         {
-                            "name": "min-changed",
-                            "description": "Is raised when the min changes",
+                            "name": "value-min-changed",
+                            "description": "Is raised when the min value changes",
                             "type": {
                                 "title": "String"
                             }
                         },
                         {
-                            "name": "value-changed",
-                            "description": "Is raised when the value changes",
+                            "name": "value-max-changed",
+                            "description": "Is raised when the max value changes",
+                            "type": {
+                                "title": "String"
+                            }
+                        },
+                        {
+                            "name": "min-changed",
+                            "description": "Is raised when the scale min changes",
                             "type": {
                                 "title": "String"
                             }
                         },
                         {
                             "name": "max-changed",
-                            "description": "Is raised when the max changes",
+                            "description": "Is raised when the scale max changes",
                             "type": {
                                 "title": "String"
                             }
