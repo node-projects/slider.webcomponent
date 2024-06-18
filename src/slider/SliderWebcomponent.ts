@@ -257,13 +257,13 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         let diff = maxp - minp;
 
         if (minp < this._min) {
-            alert(`{Minimum value cannot be less than $this.min.toString()}`);
+            alert(`Minimum value cannot be less than ${this.min.toString()}`);
             this._inputs[0].value = this._min.toString();
             minp = 0;
         }
 
         if (maxp > this._max) {
-            alert(`{Maximum value cannot be greater than $this.max.toString()}`);
+            alert(`Maximum value cannot be greater than ${this.max.toString()}`);
             this._inputs[1].value = this._max.toString();
             maxp = this._max;
         }
