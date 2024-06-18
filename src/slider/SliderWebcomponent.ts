@@ -26,12 +26,12 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         /* Remove Arrows/Spinners */
         input::-webkit-outer-spin-button, 
         input::-webkit-inner-spin-button { 
-            -webkit-appearance: none; 
+            appearance: none; 
             margin: 0; 
         } 
         
         .slider-container { 
-            width: 100%; 
+            width: 100%;
         } 
         
         .slider-container { 
@@ -62,7 +62,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             top: -8px; 
             pointer-events: none; 
             cursor: pointer; 
-            -webkit-appearance: none; 
+            appearance: none; 
         } 
   
         /* Styles for the range thumb in WebKit browsers */
@@ -72,8 +72,17 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             border-radius: 70%; 
             background: #555; 
             pointer-events: auto; 
-            -webkit-appearance: none; 
+            appearance: none; 
         } 
+        
+        input[type="range"]::-moz-range-thumb { 
+            height: 18px; 
+            width: 18px; 
+            border-radius: 70%; 
+            background: #555; 
+            pointer-events: auto; 
+            appearance: none; 
+        }
   
     `;
 
@@ -122,6 +131,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     private _inputs: HTMLInputElement[];
     private _rangeInputs: HTMLInputElement[];
     private _ready: Boolean = false;
+    private _valuesGap: number = 1;
 
     public get valueMin() {
         return this._valueMin;
@@ -187,8 +197,6 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
         const rangevalue: HTMLDivElement = this._getDomElement("slider");
 
-        let valuesGap = 500;
-
         for (let i = 0; i < this._inputs.length; i++) {
             this._inputs[i].addEventListener("blur", this._handleInputChange.bind(this));
             this._inputs[i].addEventListener("keydown", (e) => {
@@ -207,13 +215,13 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
                 let diff = maxVal - minVal;
 
                 // Check if the values gap is exceeded 
-                if (diff < valuesGap) {
+                if (diff < this._valuesGap) {
 
                     // Check if the input is the min range input 
                     if ((e.target as HTMLInputElement).className === "min-range") {
-                        this._rangeInputs[0].value = (maxVal - valuesGap).toString();
+                        this._rangeInputs[0].value = (maxVal - this._valuesGap).toString();
                     } else {
-                        this._rangeInputs[1].value = (minVal + valuesGap).toString();
+                        this._rangeInputs[1].value = (minVal + this._valuesGap).toString();
                     }
                 } else {
 
@@ -257,13 +265,13 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         let diff = maxp - minp;
 
         if (minp < this._min) {
-            alert(`Minimum value cannot be less than ${this.min.toString()}`);
+            console.log(`Minimum value cannot be less than ${this.min.toString()}`);
             this._inputs[0].value = this._min.toString();
             minp = 0;
         }
 
         if (maxp > this._max) {
-            alert(`Maximum value cannot be greater than ${this.max.toString()}`);
+            console.log(`Maximum value cannot be greater than ${this.max.toString()}`)
             this._inputs[1].value = this._max.toString();
             maxp = this._max;
         }
@@ -278,7 +286,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             }
         }
 
-        if (diff >= 500 && maxp <= parseInt(this._rangeInputs[1].max)) {
+        if (diff >= this._valuesGap && maxp <= parseInt(this._rangeInputs[1].max)) {
             if (inputIndex === 0) {
                 this._rangeInputs[0].value = minp.toString();
                 let value1 = parseInt(this._rangeInputs[0].max);
