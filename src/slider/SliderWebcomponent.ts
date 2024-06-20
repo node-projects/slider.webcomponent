@@ -228,6 +228,8 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
                     // Update input values and range progress 
                     this._inputs[0].value = minVal.toString();
                     this._inputs[1].value = maxVal.toString();
+                    this.valueMin = minVal;
+                    this.valueMax = maxVal;
                     rangevalue.style.left = `${(minVal / parseInt(this._rangeInputs[0].max)) * 100}%`;
                     rangevalue.style.right = `${100 - (maxVal / parseInt(this._rangeInputs[1].max)) * 100}%`;
                 }
