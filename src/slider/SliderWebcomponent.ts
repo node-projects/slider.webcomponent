@@ -195,8 +195,6 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     ready() {
         this._parseAttributesToProperties();
 
-        const rangevalue: HTMLDivElement = this._getDomElement("slider");
-
         for (let i = 0; i < this._inputs.length; i++) {
             this._inputs[i].addEventListener("blur", this._handleInputChange.bind(this));
             this._inputs[i].addEventListener("keydown", (e) => {
@@ -230,8 +228,8 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
                     this._inputs[1].value = maxVal.toString();
                     this.valueMin = minVal;
                     this.valueMax = maxVal;
-                    rangevalue.style.left = `${(minVal / parseInt(this._rangeInputs[0].max)) * 100}%`;
-                    rangevalue.style.right = `${100 - (maxVal / parseInt(this._rangeInputs[1].max)) * 100}%`;
+                    this._updateSliderPosition(this.valueMin, parseInt(this._rangeInputs[0].max), true);
+                    this._updateSliderPosition(this.valueMax, parseInt(this._rangeInputs[1].max), false);
                 }
             });
         }
@@ -303,12 +301,16 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
     private _updateSliderPosition(value: number, max: number, isMin: boolean) {
         const rangevalue: HTMLDivElement = this._getDomElement("slider");
+        const range = this._max - this._min; // Calculate the total range
+    
         if (isMin) {
-            rangevalue.style.left = `${(value / max) * 100}%`;
+            const relativeValue = value - this._min; // Calculate the relative value within the range
+            rangevalue.style.left = `${(relativeValue / range) * 100}%`;
         } else {
-            rangevalue.style.right = `${100 - (value / max) * 100}%`;
+            const relativeValue = value - this._min; // Calculate the relative value within the range
+            rangevalue.style.right = `${100 - (relativeValue / range) * 100}%`;
         }
-    }
+    }    
 
     private _valueMinChanged() {
         if (!this._ready) return;
