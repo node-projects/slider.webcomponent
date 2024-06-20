@@ -267,7 +267,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         if (minp < this._min) {
             console.log(`Minimum value cannot be less than ${this.min.toString()}`);
             this._inputs[0].value = this._min.toString();
-            minp = 0;
+            minp = this._min;
         }
 
         if (maxp > this._max) {
