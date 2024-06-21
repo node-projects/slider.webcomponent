@@ -159,16 +159,16 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
             if (name == "value-min"){
-                this._valueMinChanged();
+                this._valueMinAttributeChanged();
             }
             if (name === "value-max"){
-                this.valueMaxChanged();
+                this._valueMaxAttributeChanged();
             } 
             if (name == "min"){
-                this.minChanged();
+                this._minAttributeChanged();
             }
             if (name === "max"){
-                this.maxChanged();
+                this._maxAttributeChanged();
             } 
     }
 
@@ -304,24 +304,24 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         }
     }    
 
-    private _valueMinChanged() {
+    private _valueMinAttributeChanged() {
         if (!this._ready) return;
         this._numberInputs[0].value = this.valueMin.toString();
         this._numberInputs[0].dispatchEvent(new Event('blur', { bubbles: true }));
     }
 
-    private valueMaxChanged() {
+    private _valueMaxAttributeChanged() {
         if (!this._ready) return;
         this._numberInputs[1].value = this.valueMax.toString();
         this._numberInputs[1].dispatchEvent(new Event('blur', { bubbles: true }));
     }
 
-    private minChanged() {
+    private _minAttributeChanged() {
         if (!this._ready) return;
         this._updateRangeInputsMinMax();
     }
 
-    private maxChanged() {
+    private _maxAttributeChanged() {
         if (!this._ready) return;
         this._updateRangeInputsMinMax();
     }
