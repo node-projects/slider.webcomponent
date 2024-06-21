@@ -159,19 +159,15 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
             if (name == "value-min"){
-                this.valueMin = newValue;
                 this._valueMinChanged();
             }
             if (name === "value-max"){
-                this.valueMax = newValue;
                 this.valueMaxChanged();
             } 
             if (name == "min"){
-                this.min = newValue;
                 this.minChanged();
             }
             if (name === "max"){
-                this.max = newValue;
                 this.maxChanged();
             } 
     }
@@ -202,7 +198,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
         // Add event listeners to range input elements 
         for (let i = 0; i < this._rangeInputs.length; i++) {
-            this._rangeInputs[i].addEventListener("input", e => {
+            this._rangeInputs[i].addEventListener("change", e => {
                 let minVal = parseInt(this._rangeInputs[0].value);
                 let maxVal = parseInt(this._rangeInputs[1].value);
 
