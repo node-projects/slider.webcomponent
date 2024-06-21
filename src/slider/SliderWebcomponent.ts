@@ -158,18 +158,18 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-            if (name == "value-min"){
-                this._valueMinAttributeChanged();
-            }
-            if (name === "value-max"){
-                this._valueMaxAttributeChanged();
-            } 
-            if (name == "min"){
-                this._minAttributeChanged();
-            }
-            if (name === "max"){
-                this._maxAttributeChanged();
-            } 
+        if (name == "value-min") {
+            this._valueMinAttributeChanged();
+        }
+        if (name === "value-max") {
+            this._valueMaxAttributeChanged();
+        }
+        if (name == "min") {
+            this._minAttributeChanged();
+        }
+        if (name === "max") {
+            this._maxAttributeChanged();
+        }
     }
 
     constructor() {
@@ -182,7 +182,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         this._rangeInputs = Array.from(this._getDomElements(".range-input input"));
     }
 
-    disconnectedCallback() {}
+    disconnectedCallback() { }
 
     ready() {
         this._parseAttributesToProperties();
@@ -196,35 +196,40 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             });
         }
 
-        // Add event listeners to range input elements 
+        // Add event listeners to range input elements
         for (let i = 0; i < this._rangeInputs.length; i++) {
-            this._rangeInputs[i].addEventListener("change", e => {
+            this._rangeInputs[i].addEventListener("input", e => {
                 let minVal = parseInt(this._rangeInputs[0].value);
                 let maxVal = parseInt(this._rangeInputs[1].value);
 
                 let diff = maxVal - minVal;
 
-                // Check if the values gap is exceeded 
+                // Check if the values gap is exceeded
                 if (diff < this._valuesGap) {
-
-                    // Check if the input is the min range input 
+                    // Check if the input is the min range input
                     if ((e.target as HTMLInputElement).className === "min-range") {
                         this._rangeInputs[0].value = (maxVal - this._valuesGap).toString();
                     } else {
                         this._rangeInputs[1].value = (minVal + this._valuesGap).toString();
                     }
                 } else {
-
-                    // Update input values and range progress 
+                    // Update input values and range progress
                     this._numberInputs[0].value = minVal.toString();
                     this._numberInputs[1].value = maxVal.toString();
-                    this.valueMin = minVal.toString();
-                    this.valueMax = maxVal.toString();
-                    this._updateSliderPosition(parseInt(this.valueMin), parseInt(this._rangeInputs[0].max), true);
-                    this._updateSliderPosition(parseInt(this.valueMax), parseInt(this._rangeInputs[1].max), false);
+                    this._updateSliderPosition(minVal, parseInt(this._rangeInputs[0].max), true);
+                    this._updateSliderPosition(maxVal, parseInt(this._rangeInputs[1].max), false);
                 }
             });
+
+            this._rangeInputs[i].addEventListener("change", e => {
+                let minVal = parseInt(this._rangeInputs[0].value);
+                let maxVal = parseInt(this._rangeInputs[1].value);
+
+                this.valueMin = minVal.toString();
+                this.valueMax = maxVal.toString();
+            });
         }
+
 
         this._ready = true;
 
@@ -294,7 +299,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     private _updateSliderPosition(value: number, max: number, isMin: boolean) {
         const rangevalue: HTMLDivElement = this._getDomElement("slider");
         const range = parseInt(this.max) - parseInt(this.min); // Calculate the total range
-    
+
         if (isMin) {
             const relativeValue = value - parseInt(this.min); // Calculate the relative value within the range
             rangevalue.style.left = `${(relativeValue / range) * 100}%`;
@@ -302,7 +307,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             const relativeValue = value - parseInt(this.min); // Calculate the relative value within the range
             rangevalue.style.right = `${100 - (relativeValue / range) * 100}%`;
         }
-    }    
+    }
 
     private _valueMinAttributeChanged() {
         if (!this._ready) return;
