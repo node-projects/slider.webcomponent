@@ -322,14 +322,12 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
     private _valueMinAttributeChanged() {
         if (!this._ready) return;
-        this._numberInputs[0].value = this.valueMin.toString();
-        this._numberInputs[0].dispatchEvent(new Event('blur', { bubbles: true }));
+        this._handleInputChange({ target: this._numberInputs[0] } as unknown as Event);
     }
 
     private _valueMaxAttributeChanged() {
         if (!this._ready) return;
-        this._numberInputs[1].value = this.valueMax.toString();
-        this._numberInputs[1].dispatchEvent(new Event('blur', { bubbles: true }));
+        this._handleInputChange({ target: this._numberInputs[1] } as unknown as Event);
     }
 
     private _minAttributeChanged() {
