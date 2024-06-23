@@ -128,36 +128,46 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     private _rangeInputs: HTMLInputElement[];
     private _ready: Boolean = false;
     private _valuesGap: number = 1;
+    private _suppressAttributeChange: boolean = false;
 
     public get valueMin() {
         return this.getAttribute('value-min');
     }
     public set valueMin(value) {
+        this._suppressAttributeChange = true;
         this.setAttribute('value-min', value.toString());
+        this._suppressAttributeChange = false;
     }
 
     public get valueMax() {
         return this.getAttribute('value-max');
     }
     public set valueMax(value) {
+        this._suppressAttributeChange = true;
         this.setAttribute('value-max', value.toString());
+        this._suppressAttributeChange = false;
     }
 
     public get min() {
         return this.getAttribute('min');
     }
     public set min(value) {
+        this._suppressAttributeChange = true;
         this.setAttribute('min', value.toString());
+        this._suppressAttributeChange = false;
     }
 
     public get max() {
         return this.getAttribute('max');
     }
     public set max(value) {
+        this._suppressAttributeChange = true;
         this.setAttribute('max', value.toString());
+        this._suppressAttributeChange = false;
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        if (this._suppressAttributeChange) return;
         if (name == "value-min") {
             this._valueMinAttributeChanged();
         }
@@ -230,7 +240,6 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             });
         }
 
-
         this._ready = true;
 
         this._updateInputValues();
@@ -294,6 +303,8 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
                 this._updateSliderPosition(maxp, value2, false);
             }
         }
+        this.valueMin = this._rangeInputs[0].value;
+        this.valueMax = this._rangeInputs[1].value;
     }
 
     private _updateSliderPosition(value: number, max: number, isMin: boolean) {
