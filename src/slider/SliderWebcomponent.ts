@@ -126,7 +126,6 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
     private _numberInputs: HTMLInputElement[];
     private _rangeInputs: HTMLInputElement[];
-    private _ready: Boolean = false;
     private _valuesGap: number = 1;
     private _suppressAttributeChange: boolean = false;
 
@@ -137,6 +136,8 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         this._suppressAttributeChange = true;
         this.setAttribute('value-min', value.toString());
         this._suppressAttributeChange = false;
+        this._updateInputValues();
+        this._updateRangeInputsValues();
     }
 
     public get valueMax() {
@@ -146,6 +147,8 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         this._suppressAttributeChange = true;
         this.setAttribute('value-max', value.toString());
         this._suppressAttributeChange = false;
+        this._updateInputValues();
+        this._updateRangeInputsValues();
     }
 
     public get min() {
@@ -155,6 +158,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         this._suppressAttributeChange = true;
         this.setAttribute('min', value.toString());
         this._suppressAttributeChange = false;
+        this._updateRangeInputsMinMax();
     }
 
     public get max() {
@@ -164,21 +168,19 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         this._suppressAttributeChange = true;
         this.setAttribute('max', value.toString());
         this._suppressAttributeChange = false;
+        this._updateRangeInputsMinMax();
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
         if (this._suppressAttributeChange) return;
-        if (name == "value-min") {
-            this._valueMinAttributeChanged();
+        if (name === "value-min" || name === "value-max") {
+            this._updateInputValues();
+            this._updateRangeInputsValues();
+            this._updateSliderPosition(parseInt(this.valueMin), parseInt(this._rangeInputs[0].max), true);
+            this._updateSliderPosition(parseInt(this.valueMax), parseInt(this._rangeInputs[1].max), false);
         }
-        if (name === "value-max") {
-            this._valueMaxAttributeChanged();
-        }
-        if (name == "min") {
-            this._minAttributeChanged();
-        }
-        if (name === "max") {
-            this._maxAttributeChanged();
+        if (name === "min" || name === "max") {
+            this._updateRangeInputsMinMax();
         }
     }
 
@@ -190,6 +192,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
     connectedCallback() {
         this._numberInputs = Array.from(this._getDomElements(".inputs-wrapper input"));
         this._rangeInputs = Array.from(this._getDomElements(".range-input input"));
+        this.ready();
     }
 
     disconnectedCallback() { }
@@ -224,10 +227,8 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
                     }
                 } else {
                     // Update input values and range progress
-                    this._numberInputs[0].value = minVal.toString();
-                    this._numberInputs[1].value = maxVal.toString();
-                    this._updateSliderPosition(minVal, parseInt(this._rangeInputs[0].max), true);
-                    this._updateSliderPosition(maxVal, parseInt(this._rangeInputs[1].max), false);
+                    this.valueMin = minVal.toString();
+                    this.valueMax = maxVal.toString();
                 }
             });
 
@@ -240,10 +241,9 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             });
         }
 
-        this._ready = true;
-
         this._updateInputValues();
-        this._updateRangeInputsMinMaxAndValue();
+        this._updateRangeInputsMinMax();
+        this._updateRangeInputsValues();
         this._updateSliderPosition(parseInt(this.valueMin), parseInt(this._rangeInputs[0].max), true);
         this._updateSliderPosition(parseInt(this.valueMax), parseInt(this._rangeInputs[1].max), false);
     }
@@ -253,11 +253,14 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         this._numberInputs[1].value = this.valueMax.toString();
     }
 
-    private _updateRangeInputsMinMaxAndValue() {
+    private _updateRangeInputsMinMax() {
         this._rangeInputs.forEach(rangeInput => {
             rangeInput.min = this.min.toString();
             rangeInput.max = this.max.toString();
         });
+    }
+
+    private _updateRangeInputsValues() {
         this._rangeInputs[0].value = this.valueMin.toString();
         this._rangeInputs[1].value = this.valueMax.toString();
     }
@@ -318,26 +321,6 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             const relativeValue = value - parseInt(this.min); // Calculate the relative value within the range
             rangevalue.style.right = `${100 - (relativeValue / range) * 100}%`;
         }
-    }
-
-    private _valueMinAttributeChanged() {
-        if (!this._ready) return;
-        this._handleInputChange({ target: this._numberInputs[0] } as unknown as Event);
-    }
-
-    private _valueMaxAttributeChanged() {
-        if (!this._ready) return;
-        this._handleInputChange({ target: this._numberInputs[1] } as unknown as Event);
-    }
-
-    private _minAttributeChanged() {
-        if (!this._ready) return;
-        this._updateRangeInputsMinMaxAndValue();
-    }
-
-    private _maxAttributeChanged() {
-        if (!this._ready) return;
-        this._updateRangeInputsMinMaxAndValue();
     }
 }
 
