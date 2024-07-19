@@ -243,7 +243,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         this._ready = true;
 
         this._updateInputValues();
-        this._updateRangeInputsMinMax();
+        this._updateRangeInputsMinMaxAndValue();
         this._updateSliderPosition(parseInt(this.valueMin), parseInt(this._rangeInputs[0].max), true);
         this._updateSliderPosition(parseInt(this.valueMax), parseInt(this._rangeInputs[1].max), false);
     }
@@ -253,7 +253,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         this._numberInputs[1].value = this.valueMax.toString();
     }
 
-    private _updateRangeInputsMinMax() {
+    private _updateRangeInputsMinMaxAndValue() {
         this._rangeInputs.forEach(rangeInput => {
             rangeInput.min = this.min.toString();
             rangeInput.max = this.max.toString();
@@ -332,12 +332,12 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
     private _minAttributeChanged() {
         if (!this._ready) return;
-        this._updateRangeInputsMinMax();
+        this._updateRangeInputsMinMaxAndValue();
     }
 
     private _maxAttributeChanged() {
         if (!this._ready) return;
-        this._updateRangeInputsMinMax();
+        this._updateRangeInputsMinMaxAndValue();
     }
 }
 
