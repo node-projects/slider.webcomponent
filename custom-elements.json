@@ -10,36 +10,6 @@
                     "kind": "class",
                     "description": "A Slider Control",
                     "name": "SliderWebcomponent",
-                    "members": [
-                        {
-                            "kind": "field",
-                            "name": "min",
-                            "type":  {
-                                "text": "number"
-                            }
-                        },
-                        {
-                            "kind": "field",
-                            "name": "max",
-                            "type":  {
-                                "text": "number"
-                            }
-                        },
-                        {
-                            "kind": "field",
-                            "name": "value-min",
-                            "type":  {
-                                "text": "number"
-                            }
-                        },
-                        {
-                            "kind": "field",
-                            "name": "value-max",
-                            "type":  {
-                                "text": "number"
-                            }
-                        }
-                    ],
                     "attributes": [
                         {
                             "name": "min",
@@ -56,36 +26,6 @@
                         {
                             "name": "value-max",
                             "fieldName": "value-max"
-                        }
-                    ],
-                    "events": [
-                        {
-                            "name": "value-min-changed",
-                            "description": "Is raised when the min value changes",
-                            "type": {
-                                "title": "String"
-                            }
-                        },
-                        {
-                            "name": "value-max-changed",
-                            "description": "Is raised when the max value changes",
-                            "type": {
-                                "title": "String"
-                            }
-                        },
-                        {
-                            "name": "min-changed",
-                            "description": "Is raised when the scale min changes",
-                            "type": {
-                                "title": "String"
-                            }
-                        },
-                        {
-                            "name": "max-changed",
-                            "description": "Is raised when the scale max changes",
-                            "type": {
-                                "title": "String"
-                            }
                         }
                     ],
                     "superclass": {
