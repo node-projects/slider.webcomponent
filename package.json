@@ -32,6 +32,7 @@
   "dependencies": {
     "@node-projects/base-custom-webcomponent": "^0.27.6",
     "@node-projects/slider.webcomponent": "^1.0.6",
+    "@node-projects/web-component-designer-visualization-addons": "^0.1.45",
     "construct-style-sheets-polyfill": "^3.1.0"
   }
 }
