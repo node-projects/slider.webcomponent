@@ -28,6 +28,36 @@
                             "fieldName": "value-max"
                         }
                     ],
+                    "events": [
+                        {
+                            "name": "value-min-attribute-changed",
+                            "description": "Is raised when the min-value attribute changes",
+                            "type": {
+                                "title": "String"
+                            }
+                        },
+                        {
+                            "name": "value-max-attribute-changed",
+                            "description": "Is raised when the max-value attribute changes",
+                            "type": {
+                                "title": "String"
+                            }
+                        },
+                        {
+                            "name": "min-attribute-changed",
+                            "description": "Is raised when the min attribute changes",
+                            "type": {
+                                "title": "String"
+                            }
+                        },
+                        {
+                            "name": "max-changed",
+                            "description": "Is raised when the max attribute changes",
+                            "type": {
+                                "title": "String"
+                            }
+                        }
+                    ],
                     "superclass": {
                         "name": "BaseCustomWebComponentConstructorAppend"
                     },
