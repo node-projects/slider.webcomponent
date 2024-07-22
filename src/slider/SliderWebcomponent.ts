@@ -80,15 +80,11 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
     private _rangeInputs: HTMLInputElement[];
     private _valuesGap: number = 1;
-    private _suppressAttributeChange: boolean = false;
-    private _currentMinVal: number;
-    private _currentMaxVal: number;
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-        if (this._suppressAttributeChange) return;
-
+        if (newValue === 'undefined') return;
         if (name === "value-min" || name === "value-max") {
-            this._validateValues(name, newValue);
+            this._validateMinMaxValuesAfterAttributeChangedCallback(name, newValue);
         }
 
         if (name === "min" || name === "max") {
@@ -108,60 +104,55 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
         this._parseAttributesToProperties();
 
-        // Initialize current values
-        this._currentMinVal = parseInt(this.getAttribute('value-min'));
-        this._currentMaxVal = parseInt(this.getAttribute('value-max'));
-
         // Add event listeners to range input elements
         for (let i = 0; i < this._rangeInputs.length; i++) {
             this._rangeInputs[i].addEventListener("input", e => {
-                this._handleRangeInput(e);
+                this._handleRangeInputInputEvent(e);                
             });
 
             this._rangeInputs[i].addEventListener("change", e => {
-                this._handleRangeChange(e);
+                this._handleRangeInputChangeEvent(e);
             });
         }
 
         this._updateRangeInputsMinMax();
-        this._updateRangeInputsValues();
-        this._updateSliderPosition(this._currentMinVal, parseInt(this.getAttribute('max')), true);
-        this._updateSliderPosition(this._currentMaxVal, parseInt(this.getAttribute('max')), false);
+        this._rangeInputs[0].value = this.getAttribute('value-min');
+        this._rangeInputs[1].value = this.getAttribute('value-max');
+        this._updateSliderPosition(parseInt(this.getAttribute('value-min')), parseInt(this.getAttribute('max')), true);
+        this._updateSliderPosition(parseInt(this.getAttribute('value-max')), parseInt(this.getAttribute('max')), false);
     }
 
-    private _validateValues(changedAttr: string, newValue: string) {
+    private _validateMinMaxValuesAfterAttributeChangedCallback(changedAttr: string, newValue: string) {
         let min = parseInt(this.getAttribute('min'));
         let max = parseInt(this.getAttribute('max'));
         let valueMin = parseInt(this.getAttribute('value-min'));
         let valueMax = parseInt(this.getAttribute('value-max'));
 
         if (changedAttr === 'value-min') {
+            if (parseInt(newValue) < min) {
+                this._overwriteOutOfRangeAttributeValue('value-min', min.toString());
+                return;
+            }
             valueMin = Math.max(min, Math.min(parseInt(newValue), valueMax - this._valuesGap));
+            this._updateSliderPosition(valueMin, max, true);
+            if (this._rangeInputs) {
+                this._rangeInputs[0].value = valueMin.toString(); 
+            }
         } else if (changedAttr === 'value-max') {
+            if (parseInt(newValue) > max) {
+                this._overwriteOutOfRangeAttributeValue('value-max', max.toString());
+                return;
+            }
             valueMax = Math.min(max, Math.max(parseInt(newValue), valueMin + this._valuesGap));
+            this._updateSliderPosition(valueMax, max, false);
+            if (this._rangeInputs) {
+                this._rangeInputs[1].value = valueMax.toString();
+            }
         }
+    }
 
-        const oldValueMin = parseInt(this.getAttribute('value-min'));
-        const oldValueMax = parseInt(this.getAttribute('value-max'));
-
-        this._suppressAttributeChange = true;
-        if (valueMin !== oldValueMin) {
-            this.setAttribute('value-min', valueMin.toString());
-        }
-        if (valueMax !== oldValueMax) {
-            this.setAttribute('value-max', valueMax.toString());
-        }
-        this._suppressAttributeChange = false;
-
-        this._updateRangeInputsValues();
-        this._updateSliderPosition(valueMin, max, true);
-        this._updateSliderPosition(valueMax, max, false);
-
-        if (changedAttr === 'value-min' && valueMin !== oldValueMin) {
-            this._dispatchChangeEvent('value-min-changed', valueMin);
-        } else if (changedAttr === 'value-max' && valueMax !== oldValueMax) {
-            this._dispatchChangeEvent('value-max-changed', valueMax);
-        }
+    private _overwriteOutOfRangeAttributeValue(name: string, value: string) {
+        this._setAttributeFromInternal(name, value);
     }
 
     private _updateRangeInputsMinMax() {
@@ -170,60 +161,47 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
                 rangeInput.min = this.getAttribute('min');
                 rangeInput.max = this.getAttribute('max');
             });
+            this._updateSliderPosition(parseInt(this.getAttribute('value-min')), parseInt(this.getAttribute('max')), true);
+            this._updateSliderPosition(parseInt(this.getAttribute('value-max')), parseInt(this.getAttribute('max')), false);
         }
     }
 
-    private _updateRangeInputsValues() {
-        if (this._rangeInputs) {
-            this._rangeInputs[0].value = this.getAttribute('value-min');
-            this._rangeInputs[1].value = this.getAttribute('value-max');
-        }
-    }
+    private _handleRangeInputInputEvent(e: Event) {
+        let minRangeInputMinVal = parseInt(this._rangeInputs[0].value);
+        let maxRangeInputMaxVal = parseInt(this._rangeInputs[1].value);
 
-    private _handleRangeInput(e: Event) {
-        let minVal = parseInt(this._rangeInputs[0].value);
-        let maxVal = parseInt(this._rangeInputs[1].value);
-
-        let diff = maxVal - minVal;
+        let diff = maxRangeInputMaxVal - minRangeInputMinVal;
 
         // Check if the values gap is exceeded
         if (diff < this._valuesGap) {
-            // Check if the input is the min range input
             if ((e.target as HTMLInputElement).className === "min-range") {
-                this._rangeInputs[0].value = (maxVal - this._valuesGap).toString();
+                this._rangeInputs[0].value = (maxRangeInputMaxVal - this._valuesGap).toString();
             } else {
-                this._rangeInputs[1].value = (minVal + this._valuesGap).toString();
+                this._rangeInputs[1].value = (minRangeInputMinVal + this._valuesGap).toString();
             }
         } else {
-            // Update input values and range progress
-            this._suppressAttributeChange = true;
-            if (parseInt(this.getAttribute('value-min')) !== minVal) {
-                this.setAttribute('value-min', minVal.toString());
-            }
-            if (parseInt(this.getAttribute('value-max')) !== maxVal) {
-                this.setAttribute('value-max', maxVal.toString());
-            }
-            this._suppressAttributeChange = false;
-            this._updateSliderPosition(minVal, parseInt(this.getAttribute('max')), true);
-            this._updateSliderPosition(maxVal, parseInt(this.getAttribute('max')), false);
+            if ((e.target as HTMLInputElement).className === "min-range") {                
+                this._setAttributeFromInternal('value-min', minRangeInputMinVal.toString());
+
+            } else if ((e.target as HTMLInputElement).className === "max-range") {                
+                this._setAttributeFromInternal('value-max', maxRangeInputMaxVal.toString());
+            }            
         }
     }
 
-    private _handleRangeChange(e: Event) {
-        let minVal = parseInt(this._rangeInputs[0].value);
-        let maxVal = parseInt(this._rangeInputs[1].value);
+    private _setAttributeFromInternal(name: string, value: string) {
+        this.setAttribute(name,value);
+    }
 
-        // Check if values actually changed
-        if (minVal !== this._currentMinVal || maxVal !== this._currentMaxVal) {
-            this._currentMinVal = minVal;
-            this._currentMaxVal = maxVal;
+    private _handleRangeInputChangeEvent(e: Event) {
+        let minRangeInputMinVal = parseInt(this._rangeInputs[0].value);
+        let maxRangeInputMaxVal = parseInt(this._rangeInputs[1].value);
 
-            // Dispatch the appropriate event
-            if ((e.target as HTMLInputElement).className === "min-range") {
-                this._dispatchChangeEvent('value-min-changed', minVal);
-            } else {
-                this._dispatchChangeEvent('value-max-changed', maxVal);
-            }
+        // Dispatch the appropriate event
+        if ((e.target as HTMLInputElement).className === "min-range") {
+            this._dispatchChangeEvent('value-min-changed', minRangeInputMinVal);
+        } else if ((e.target as HTMLInputElement).className === "max-range") {
+            this._dispatchChangeEvent('value-max-changed', maxRangeInputMaxVal);
         }
     }
 
