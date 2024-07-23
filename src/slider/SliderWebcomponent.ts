@@ -3,7 +3,6 @@ import { BaseCustomWebComponentConstructorAppend, css, html } from "@node-projec
 export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend {
 
     public static override readonly style = css` 
-
         .slider-container { 
             width: 100%;
         } 
@@ -57,11 +56,34 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             pointer-events: auto; 
             appearance: none; 
         }
-  
+
+        .tooltip {
+            position: absolute;
+            background-color: #555;
+            color: #fff;
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            transform: translateX(-50%);
+            z-index: 1;
+            visibility: hidden;
+            margin-top: 10px; /* Adjust based on your needs */
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: 100%; /* Position at the top of the tooltip */
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent #555 transparent;
+        }
     `;
 
     public static override readonly template = html`
-
         <div class="slider-container">
             <div id="slider"></div>
         </div>
@@ -70,8 +92,9 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         <div class="range-input">
             <input type="range" class="min-range" step="1">
             <input type="range" class="max-range" step="1">
+            <div class="tooltip" id="min-tooltip"></div>
+            <div class="tooltip" id="max-tooltip"></div>
         </div>
-
     `;
 
     public static readonly is = 'node-projects-slider';
@@ -80,6 +103,8 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
     private _rangeInputs: HTMLInputElement[];
     private _valuesGap: number = 1;
+    private _minTooltip: HTMLElement;
+    private _maxTooltip: HTMLElement;
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
         if (newValue === 'undefined') return;
@@ -101,13 +126,15 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
     ready() {
         this._rangeInputs = Array.from(this._getDomElements(".range-input input"));
+        this._minTooltip = this._getDomElement("min-tooltip");
+        this._maxTooltip = this._getDomElement("max-tooltip");
 
         this._parseAttributesToProperties();
 
         // Add event listeners to range input elements
         for (let i = 0; i < this._rangeInputs.length; i++) {
             this._rangeInputs[i].addEventListener("input", e => {
-                this._handleRangeInputInputEvent(e);                
+                this._handleRangeInputInputEvent(e);
             });
 
             this._rangeInputs[i].addEventListener("change", e => {
@@ -136,7 +163,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             valueMin = Math.max(min, Math.min(parseInt(newValue), valueMax - this._valuesGap));
             this._updateSliderPosition(valueMin, max, true);
             if (this._rangeInputs) {
-                this._rangeInputs[0].value = valueMin.toString(); 
+                this._rangeInputs[0].value = valueMin.toString();
             }
         } else if (changedAttr === 'value-max') {
             if (parseInt(newValue) > max) {
@@ -180,17 +207,31 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
                 this._rangeInputs[1].value = (minRangeInputMinVal + this._valuesGap).toString();
             }
         } else {
-            if ((e.target as HTMLInputElement).className === "min-range") {                
+            if ((e.target as HTMLInputElement).className === "min-range") {
                 this._setAttributeFromInternal('value-min', minRangeInputMinVal.toString());
+                this._updateTooltipPosition(this._minTooltip, this._rangeInputs[0]);
 
-            } else if ((e.target as HTMLInputElement).className === "max-range") {                
+            } else if ((e.target as HTMLInputElement).className === "max-range") {
                 this._setAttributeFromInternal('value-max', maxRangeInputMaxVal.toString());
-            }            
+                this._updateTooltipPosition(this._maxTooltip, this._rangeInputs[1]);
+            }
         }
     }
 
+    private _updateTooltipPosition(tooltip: HTMLElement, rangeInput: HTMLInputElement) {
+        const rangeInputRect = rangeInput.getBoundingClientRect();
+        const thumbWidth = 18; // Width of the thumb (adjust if needed)
+        const relativeThumbPosition = ((parseInt(rangeInput.value) - parseInt(rangeInput.min)) / (parseInt(rangeInput.max) - parseInt(rangeInput.min))) * (rangeInputRect.width - thumbWidth);
+        const unknownOffset = 3;
+
+        tooltip.style.left = `${relativeThumbPosition + thumbWidth / 2 + unknownOffset}px`;
+        tooltip.style.top = '10px';
+        tooltip.textContent = rangeInput.value;
+        tooltip.style.visibility = 'visible';
+    }
+
     private _setAttributeFromInternal(name: string, value: string) {
-        this.setAttribute(name,value);
+        this.setAttribute(name, value);
     }
 
     private _handleRangeInputChangeEvent(e: Event) {
@@ -203,6 +244,9 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
         } else if ((e.target as HTMLInputElement).className === "max-range") {
             this._dispatchChangeEvent('value-max-changed', maxRangeInputMaxVal);
         }
+
+        this._minTooltip.style.visibility = 'hidden';
+        this._maxTooltip.style.visibility = 'hidden';
     }
 
     private _updateSliderPosition(value: number, max: number, isMin: boolean) {
