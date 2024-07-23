@@ -26,6 +26,14 @@
                         {
                             "name": "value-max",
                             "fieldName": "value-max"
+                        },
+                        {
+                            "name": "slider-color",
+                            "fieldName": "slider-color"
+                        },
+                        {
+                            "name": "thumb-color",
+                            "fieldName": "thumb-color"
                         }
                     ],
                     "events": [
@@ -39,20 +47,6 @@
                         {
                             "name": "value-max-attribute-changed",
                             "description": "Is raised when the max-value attribute changes",
-                            "type": {
-                                "title": "String"
-                            }
-                        },
-                        {
-                            "name": "min-attribute-changed",
-                            "description": "Is raised when the min attribute changes",
-                            "type": {
-                                "title": "String"
-                            }
-                        },
-                        {
-                            "name": "max-changed",
-                            "description": "Is raised when the max attribute changes",
                             "type": {
                                 "title": "String"
                             }

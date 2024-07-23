@@ -14,13 +14,18 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             border-radius: 5px; 
         } 
         
+        :host {
+            --slider-color: #01940b;
+            --thumb-color: #555;
+        }
+
         .slider-container #slider { 
             height: 100%; 
             left: 25%; 
             right: 25%; 
             position: absolute; 
             border-radius: 5px; 
-            background: #01940b; 
+            background: var(--slider-color); 
         } 
         
         .range-input { 
@@ -43,7 +48,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             height: 18px; 
             width: 18px; 
             border-radius: 70%; 
-            background: #555; 
+            background: var(--thumb-color);
             pointer-events: auto; 
             appearance: none; 
         } 
@@ -52,7 +57,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
             height: 18px; 
             width: 18px; 
             border-radius: 70%; 
-            background: #555; 
+            background: var(--thumb-color);
             pointer-events: auto; 
             appearance: none; 
         }
@@ -99,7 +104,7 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
     public static readonly is = 'node-projects-slider';
 
-    static observedAttributes = ['value-min', 'value-max', 'min', 'max'];
+    static observedAttributes = ['value-min', 'value-max', 'min', 'max', 'slider-color', 'thumb-color'];
 
     private _rangeInputs: HTMLInputElement[];
     private _valuesGap: number = 1;
@@ -114,6 +119,10 @@ export class SliderWebcomponent extends BaseCustomWebComponentConstructorAppend 
 
         if (name === "min" || name === "max") {
             this._updateRangeInputsMinMax();
+        }
+
+        if (name === "slider-color" || name === "thumb-color") {
+            this.style.setProperty(`--${name}`, newValue);
         }
     }
 
