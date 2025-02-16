@@ -23,15 +23,14 @@
   "customElements": "custom-elements.json",
   "webComponentDesigner": "web-component-designer.json",
   "devDependencies": {
-    "@node-projects/web-component-designer": "^0.1.198",
+    "@node-projects/web-component-designer": "^0.1.244",
     "@web/dev-server": "^0.4.6",
-    "es-module-shims": "^1.10.0",
-    "release-it": "^17.6.0",
-    "typescript": "^5.5.3"
+    "es-module-shims": "^2.0.9",
+    "release-it": "^18.1.2",
+    "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@node-projects/base-custom-webcomponent": "^0.27.6",
-    "@node-projects/web-component-designer-visualization-addons": "^0.1.45",
-    "construct-style-sheets-polyfill": "^3.1.0"
+    "@node-projects/base-custom-webcomponent": "^0.29.0",
+    "@node-projects/web-component-designer-visualization-addons": "^0.1.113"
   }
 }
